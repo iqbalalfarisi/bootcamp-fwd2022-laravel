@@ -2,7 +2,13 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\User;
+//use Gate;
 use Illuminate\Foundation\Http\FormRequest;
+use Symfony\Component\HttpFoundation\Response;
+
+//this rule only t update request
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -13,7 +19,8 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        //create middleware from kernel at here
+        return true;
     }
 
     /**
@@ -24,7 +31,17 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => [
+                'required', 'string', 'max:255',
+            ],
+            'email' => [
+                'required', 'email', 'max:255', Rule::unique('users')->ignore($this->user),
+                //Rule only works for other records id
+            ],
+            'password' => [
+                'min:8', 'string', 'max:255', 'mixedCase',
+            ],
+            //add validation for role this here
         ];
     }
 }
